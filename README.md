@@ -33,4 +33,4 @@ A szoftver futtatásához az alábbiak szükségesek:
 * **Node.js 16+**
 * **OpenCV**
 * **SQLite**
-* ***3 db csatlakoztatott kamera (a teljes működéshez)***
+* ***A specifikációban meghatározott hardveres környezet (a teljes működéshez)***

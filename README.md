@@ -4,14 +4,14 @@ Ez a projekt egy saját fejlesztésű, gépi látáson alapuló automatikus pont
 
 ## Áttekintés
 
-A rendszer célja, hogy költséghatékony alternatívát nyújtson a piacon lévő zárt, drága rendszerekkel (pl. Scolia) szemben. A szoftver nemcsak a pontszámot rögzíti, hanem a nyilak pontos $(x, y)$ koordinátáit is tárolja, így lehetőség nyílik szórásvizsgálatra, hőtérképek (heatmap) generálására és egyéni edzéstervek követésére. A megoldás nyílt architektúrájú, moduláris felépítésű, elválasztva a fizikai érzékelést az üzleti logikától.
+A rendszer célja, hogy költséghatékony alternatívát nyújtson a piacon lévő zárt, drága rendszerekkel szemben. A szoftver nemcsak a pontszámot rögzíti, hanem a nyilak pontos $(x, y)$ koordinátáit is tárolja, így lehetőség nyílik szórásvizsgálatra, hőtérképek generálására és egyéni edzéstervek követésére. A megoldás nyílt architektúrájú, moduláris felépítésű, elválasztva a fizikai érzékelést az üzleti logikától.
 
 ## Funkciók
 
 A projekt főbb képességei:
 
 * **Valós idejű detektálás:** A dobás pillanatában azonnali ( < 1 mp) visszajelzés és pontszámítás.
-* **Precíz pozíciómeghatározás:** Síkbeli háromszögelés (trianguláció) alkalmazása 3 kamera képéből, hibaszűrő algoritmusokkal.
+* **Precíz pozíciómeghatározás:** Síkbeli háromszögelés alkalmazása 3 kamera képéből, hibaszűrő algoritmusokkal.
 * **Statisztikai elemzés:** Nemcsak a pontokat, hanem a találatok pontos koordinátáit is menti, lehetővé téve a szórásvizsgálatot.
 * **Edzésterv támogatás:** Speciális módok, ahol a cél nem feltétlenül a legmagasabb pontszám, hanem egy adott terület pontos eltalálása.
 * **Zajszűrés és stabilitás:** Fejlett "debouncing" algoritmus a fényviszonyok változása és a mozgási elmosódás kiszűrésére.

@@ -2,6 +2,7 @@ import threading
 import time
 import uuid
 
+import cv2 as cv
 import requests
 
 from game.core.ContourProcessor import ContourProcessor
@@ -14,7 +15,7 @@ THROW_URL = f"{API_BASE_URL}/autothrows"
 END_GAME_URL = f"{API_BASE_URL}/endgame"
 
 TOLERANCE = 0.5
-DETECTION_DELAY = 0.05
+DETECTION_DELAY = 0.1
 TIMEOUT_MULTIPLIER = 15
 ROUND_PAUSE_SECONDS = 4
 
@@ -30,14 +31,23 @@ def simulate_throws(game):
         return
 
     ref_data = GameFunctions.getRefImage(cameras)
-    original_ref_contours_list = ref_data["ref_contours_list"]
-    white_imgs = ref_data["white_imgs"]
+    ref_imgs = ref_data["ref_imgs"]
 
     print("Automatikus játék indult")
     current_round = 1
 
     while not stop_simulation.is_set():
         print(f"\n--- 🎯 {current_round}. KÖR KEZDŐDIK ---")
+
+        for c_idx in range(3):
+            cap_temp = cameras[c_idx]["cap"]
+            for _ in range(5):
+                cap_temp.read()
+
+            ret_temp, frame_temp = cap_temp.read()
+            if ret_temp:
+                processed_temp = ImageProcessor.crop(frame_temp, *cameras[c_idx]["crop_params"])
+                ref_imgs[c_idx] = ImageProcessor.to_grayscale(processed_temp)
 
         angles_for_cams = [[], [], []]
         confirmed_xs = [[], [], []]
@@ -46,7 +56,6 @@ def simulate_throws(game):
         detection_times = [0, 0, 0]
         darts_in_round = 0
         prev_time = time.time()
-        ref_contours_list = [tuple(item for item in c) for c in original_ref_contours_list]
 
         while darts_in_round < 3 and not stop_simulation.is_set():
 
@@ -95,6 +104,16 @@ def simulate_throws(game):
                             print("🛑 Leállítás érzékelve (dobás után).")
                             return
 
+                        time.sleep(0.5)
+
+                        print("Referencia frissítése az új állapothoz...")
+                        for c_idx in range(3):
+                            cap_temp = cameras[c_idx]["cap"]
+                            ret_temp, frame_temp = cap_temp.read()
+                            if ret_temp:
+                                processed_temp = ImageProcessor.crop(frame_temp, *cameras[c_idx]["crop_params"])
+                                ref_imgs[c_idx] = ImageProcessor.to_grayscale(processed_temp)
+
                         darts_in_round += 1
                         detected_flags = [False, False, False]
                         prev_xs = [None, None, None]
@@ -111,13 +130,26 @@ def simulate_throws(game):
 
                         processed = ImageProcessor.crop(frame, *crop_params)
                         processed_gray = ImageProcessor.to_grayscale(processed)
-                        live_contours = ContourProcessor.find_contours(processed_gray)
 
-                        ref_contours = ref_contours_list[i]
-                        diff_img = ContourProcessor.find_differences(ref_contours, live_contours, white_imgs[i].copy())
-                        diff_img_contours = ContourProcessor.find_contours(diff_img)
+                        diff = cv.absdiff(ref_imgs[i], processed_gray)
+                        _, thresh = cv.threshold(diff, 30, 255, cv.THRESH_BINARY)
 
-                        current_x = DartAnalyzer.get_x_coordinate(diff_img_contours)
+                        live_contours = ContourProcessor.find_contours(thresh)
+                        current_x = DartAnalyzer.get_x_coordinate(live_contours)
+
+                        debug_frame = processed.copy()
+                        cv.drawContours(debug_frame, live_contours, -1, (0, 0, 255), 2)
+                        if current_x != -1:
+                            cv.line(debug_frame, (int(current_x), 0), (int(current_x), debug_frame.shape[0]),
+                                    (0, 255, 0), 2)
+                            cv.putText(debug_frame, f"X: {current_x:.1f}", (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5,
+                                       (0, 255, 0), 2)
+
+                        cv.imshow(f"Debug Cam {i + 1}", debug_frame)
+                        cv.imshow(f"Diff Mask Cam {i + 1}", thresh)
+                        key = cv.waitKey(1)
+                        if key == ord('q'):
+                            stop_simulation.set()
 
                         if current_x != -1:
                             print(f"Cam{i + 1} nyíl: X={current_x:.2f}")
@@ -127,7 +159,6 @@ def simulate_throws(game):
                             confirmed_xs[i].append(current_x)
                             detection_times[i] = current_time
                             print(f"🎯 Kamera {i + 1} rögzítve: X={current_x:.2f}")
-                            ref_contours_list[i] = live_contours
                         else:
                             prev_xs[i] = current_x
 

@@ -309,7 +309,7 @@
     async function stopTracking() {
         if (browser) {
             try {
-                await fetch('http://192.168.0.24:8000/game/stop/', {method: 'POST'}); //'http://localhost:8000/game/stop/'
+                await fetch('http://192.168.0.24:8000/game/stop/', {method: 'POST'}); //You might have to change this!
                 console.log("Kamerák leállítva.");
             } catch (e) {
                 console.error("Stop error:", e);

@@ -1,13 +1,12 @@
+import math
 import threading
 
 import cv2 as cv
-import math
-
 import numpy as np
 
 from game.core.ContourProcessor import ContourProcessor
-from game.core.DartAnalyzer import DartAnalyzer
 from game.core.ImageProcessor import ImageProcessor
+
 
 class GameFunctions:
     cameras = None
@@ -20,11 +19,11 @@ class GameFunctions:
                 print("Kamerák már be vannak kapcsolva, újraindítás nem szükséges.")
                 return GameFunctions.cameras
             img_height = 3
-            bottom_values = [336, 296, 300]
+            bottom_values = [348, 314, 318]
             default_crop_params = {
-                1: (333, 336, 220, 1081),
-                2: (293, 296, 205, 1074),
-                3: (297, 302, 216, 1063)
+                1: (333, 348, 220, 1081),
+                2: (293, 314, 205, 1074),
+                3: (297, 318, 216, 1063)
             }
 
             cameras = []
@@ -59,7 +58,7 @@ class GameFunctions:
         return cameras
 
     @staticmethod
-    def turnOffCameras(num_cameras = 3):
+    def turnOffCameras(num_cameras=3):
         for i in range(1, num_cameras + 1):
             cap_name = f"cap{i}"
             if cap_name in globals():
@@ -101,4 +100,3 @@ class GameFunctions:
             "ref_contours_list": ref_contours_list,
             "white_imgs": white_imgs
         }
-

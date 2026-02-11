@@ -1,12 +1,28 @@
 import cv2 as cv
+import numpy as np
+
 
 class ContourProcessor:
-
+    # contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     @staticmethod
     def find_contours(img):
-        edges = cv.Canny(img, 150, 250)
-        contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        return contours
+        kernel = np.ones((3, 3), np.uint8)
+        img = cv.erode(img, kernel, iterations=1)
+
+        contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+        valid_contours = []
+        MAX_DART_WIDTH = 50
+
+        for cnt in contours:
+            x, y, w, h = cv.boundingRect(cnt)
+            if w > MAX_DART_WIDTH:
+                continue
+            if h < 5:
+                continue
+            valid_contours.append(cnt)
+
+        return valid_contours
 
     @staticmethod
     def find_differences(base_contours, new_contours, img, tolerance=5):

@@ -17,7 +17,7 @@
     let player1 = '';
     let player2 = '';
     let autoGame = false;
-    let ip = '192.168.0.24'; //localhost
+    let ip = '192.168.0.24'; //You might have to change this!
     let trainingPlans: TrainingPlan[] = [];
     let selectedTrainingPlan: number | null = null;
 

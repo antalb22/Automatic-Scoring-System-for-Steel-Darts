@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="darts" uuid="4ec6f12d-7ab7-4046-9893-386d1c55c6cf">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>44e2b57b-e921-4599-8c2d-f8fc7aaf7260</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:F:\Egyetem\7.felev\Projekt_Final\darts-counter-new-ver\darts-counter2\darts.db</jdbc-url>
